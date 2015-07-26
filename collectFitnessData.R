@@ -66,12 +66,20 @@ featureIndeces <- function(sensorData, featuresNames)
     c(meanCols, stdCols)
 }
 
-saveResultTables <- function(result, featureNames)
+saveResultTables <- function(result)
 {
     if(!file.exists("outputData"))
         dir.create("outputData")
-    names(result) <- featureNames
+    
     write.table(result, "outputData/activity_sensors.txt", row.names = FALSE, col.names = TRUE);
+}
+
+saveSummaryTables <- function(summary)
+{
+    if(!file.exists("outputData"))
+        dir.create("outputData")
+    
+    write.table(summary, "outputData/summary.txt", row.names = FALSE, col.names = TRUE);
 }
 
 
@@ -103,7 +111,13 @@ collectFitnessData <- function(url = "https://d396qusza40orc.cloudfront.net/getd
     # activities now is clear labeled, so combine
     result <- cbind(sensors, activities$act)
     featureNames <- c(featureNames, "activity")
+    result <- as.data.frame(result)
+    names(result) <- featureNames
     #save all
-    saveResultTables(result, featureNames)
+    saveResultTables(result)
     
+    #5. From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.    
+    result_grouped <- group_by(result, activity)
+    summary = summarise_each(result_grouped, funs(mean))
+    saveSummaryTables(summary)
 }
