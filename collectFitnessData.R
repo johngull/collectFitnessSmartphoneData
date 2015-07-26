@@ -66,6 +66,14 @@ featureIndeces <- function(sensorData, featuresNames)
     c(meanCols, stdCols)
 }
 
+saveResultTables <- function(result, featureNames)
+{
+    if(!file.exists("outputData"))
+        dir.create("outputData")
+    names(result) <- featureNames
+    write.table(result, "outputData/activity_sensors.txt", row.names = FALSE, col.names = TRUE);
+}
+
 
 collectFitnessData <- function(url = "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip",
                                files = c("UCI HAR Dataset/features.txt", "UCI HAR Dataset/activity_labels.txt", "UCI HAR Dataset/test/X_test.txt", "UCI HAR Dataset/test/y_test.txt", "UCI HAR Dataset/train/X_train.txt", "UCI HAR Dataset/train/y_train.txt") 
@@ -88,5 +96,14 @@ collectFitnessData <- function(url = "https://d396qusza40orc.cloudfront.net/getd
     activities <- loadActivities(unpackSubDir)
     actNames <- loadActivitiesNames(unpackSubDir)
     
-    actNames
+    #4. Appropriately labels the data set with descriptive variable names. 
+    activities <- as.data.frame(activities)
+    names(activities) <- "act"
+    activities <- mutate(activities, act=actNames[act])
+    # activities now is clear labeled, so combine
+    result <- cbind(sensors, activities$act)
+    featureNames <- c(featureNames, "activity")
+    #save all
+    saveResultTables(result, featureNames)
+    
 }
