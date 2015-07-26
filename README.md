@@ -30,3 +30,7 @@ All results are stored to the **outputData** directory.
 - R libraries (use install.packages):
   - dplyr
   - urltools 
+  
+###Features (sensors) details
+
+Features information can be found in **codebook.md**.
